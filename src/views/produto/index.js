@@ -56,7 +56,7 @@ const Produto = () => {
                     reader.onerror = error => reject(error)
                 })
             }
-
+            values.email = localStorage.getItem('email')
             let response
             if (id === undefined) {
                 // Criar novo produto
@@ -127,6 +127,7 @@ const Produto = () => {
                         initialValues={produtoData}
                     >
                         {id !== undefined && produtoData?.imagem && (
+                            <div>
                             <Row gutter={16}>
                                 <Col span={24}>
                                     <div>
@@ -138,17 +139,33 @@ const Produto = () => {
                                     </div>
                                 </Col>
                             </Row>
+                            <Row gutter={16}>
+                                <Col span={24}>
+                                    <Form.Item
+                                        name="classificacao_usuario"
+                                        rules={[{ required: true, message: "Por favor, insira a classificação!" }]}
+                                    >
+                                        <Input placeholder="Classificação" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            </div>
                         )}
-                        <Row gutter={16}>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="classificacao_usuario"
-                                    rules={[{ required: true, message: "Por favor, insira a classificação!" }]}
-                                >
-                                    <Input placeholder="Classificação" />
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                        {id === undefined && (
+                            <Row gutter={16}>
+                                <Col span={24}>
+                                    <Form.Item
+                                        name="imagem"
+                                        valuePropName="fileList"
+                                        getValueFromEvent={e => (Array.isArray(e) ? e : e?.fileList)}
+                                    >
+                                        <Upload {...propsImagens} listType="picture">
+                                            <Button icon={<UploadOutlined />}>Adicionar Imagem</Button>
+                                        </Upload>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        )}
                         <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
                             <Form.Item>
                                 <Button htmlType="submit">

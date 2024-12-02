@@ -257,7 +257,7 @@ const ListaProduto = () => {
 						</div>
 
 						<div>
-							<p><strong>Classificação:</strong> {modalData.classificacao}</p>
+							<p><strong>Classificação:</strong> {modalData.classificacao_usuario ? modalData.classificacao_usuario : modalData.classificacao}</p>
 						</div>
 					</div>
 					)}
