@@ -18,6 +18,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import ButtonComponent from "../../components/atom/Button";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const ListaProduto = () => {
 	const [data, setData] = useState([]);
@@ -52,18 +53,21 @@ const ListaProduto = () => {
 		},
 		{
 			title: "Classificação",
-			dataIndex: "classificacao",
-			key: "classificacao",
+			dataIndex: "classificacao_usuario",
+			key: "classificacao_usuario",
+			render: (text, record) => text ? text : record.classificacao,
 		},
 		{
 			title: "Usuário",
-			dataIndex: "usuario",
-			key: "usuario",
+			dataIndex: ["usuario", "nome"],
+			key: "usuario.nome",
 		},
 		{
 			title: "Data de Entrada",
-			dataIndex: "created_at",
-			key: "created_at",
+			dataIndex: "createdAt",
+			key: "createdAt",
+			render: (text) =>
+        moment(text).format("DD/MM/YYYY HH:mm"),
 		},
 		{
 			title: "Ações",
@@ -102,7 +106,7 @@ const ListaProduto = () => {
 
 	const fetchData = async () => {
 		try {
-			const response = await axios.get("http://localhost:8080/produto");
+			const response = await axios.get("http://localhost:8080/material");
 			setData(response.data);
 		} catch (error) {
 			console.error("Erro ao buscar dados:", error);
@@ -111,11 +115,11 @@ const ListaProduto = () => {
 
 	const handleDelete = async (id) => {
 		try {
-			await axios.delete(`http://localhost:8080/produto/${id}`);
+			await axios.delete(`http://localhost:8080/material/${id}`);
 			message.success("Produto excluído com sucesso!");
 			fetchData();
 		} catch (error) {
-			console.error("Erro ao excluir produto:", error.message);
+			console.error("Erro ao excluir Material:", error.message);
 			message.error("Erro ao excluir item. Por favor, tente novamente.");
 		}
 	};
@@ -126,10 +130,10 @@ const ListaProduto = () => {
 
 	const onSearch = async () => {
 		try {
-			const response = await axios.get(`http://localhost:8080/produto?search=${searchValue}`);
+			const response = await axios.get(`http://localhost:8080/material?search=${searchValue}`);
 			setData(response.data);
 		} catch (error) {
-			console.error("Erro ao buscar produtos:", error);
+			console.error("Erro ao buscar Materiais:", error);
 		}
 	};
 
@@ -175,7 +179,7 @@ const ListaProduto = () => {
 						}}
 					>
 						<ButtonComponent
-							title="Cadastrar Produto"
+							title="Cadastrar Material"
 							style={{ marginRight: "15px", background: "#98C4A8", border: "none" }}
 							icon={<PlusOutlined />}
 							onClick={() => {
@@ -245,9 +249,17 @@ const ListaProduto = () => {
 					footer={null}
 				>
 					{modalData && (
+					<div>
 						<div>
-							<p><strong>Descrição:</strong> {modalData.COLOCARIMAGEM}</p>
+						<img src={`${modalData.base_64}`} alt="image"
+						style = {{width: "100%", height: "100%"}}
+						/>
 						</div>
+
+						<div>
+							<p><strong>Classificação:</strong> {modalData.classificacao}</p>
+						</div>
+					</div>
 					)}
 				</Modal>
 			</div>
