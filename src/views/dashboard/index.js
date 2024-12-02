@@ -7,17 +7,18 @@ import { COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7 } from ".
 import axios from "axios";
 
 const Dashboard = (props) => {
-	const [data = [], setData] = useState();
-	const [dataEstoque = [], setDataEstoque] = useState();
-	const [dataProdutos = [], setDataProdutos] = useState();
+	const [dataRanking, setDataRanking] = useState([]);
+	const [dataMaterial, setDataMaterial] = useState([]);
+	const [dataUsuario, setDataUsuario] = useState([]);
 
 	const obterDados = async () => {
 		try {
-			let response =  await axios.get("http://localhost:8080/dashboard-entrada-saida");
-			let quantidade_estoque = await axios.get("http://localhost:8080/dashboard-quantidade-estoque");
-			setData(response.data);
-			setDataEstoque(quantidade_estoque.data.estoques);
-			setDataProdutos(quantidade_estoque.data.dados);
+			let response_ranking = await axios.get("http://localhost:8080/dashboard-ranking");
+			let response_material = await axios.get("http://localhost:8080/dashboard-material-usuario");
+
+			setDataRanking(response_ranking.data);
+			setDataMaterial(response_material.data.dados);
+			setDataUsuario(response_material.data.usuarios);
 
 		} catch (e) {
 			Swal.fire({
@@ -32,15 +33,11 @@ const Dashboard = (props) => {
 		obterDados();
 	}, []);
 
-	const stateEntradaSaida = {
+	const stateRanking = {
 		series: [
 			{
-				name: "Entrada",
-				data: data.map(item => parseInt(item.entrada)),
-			},
-			{
-				name: "Saída",
-				data: data.map(item => parseInt(item.saida)),
+				name: "Ranking",
+				data: Array.isArray(dataRanking) ? dataRanking.map(item => item.quantidade) : [],
 			},
 		],
 
@@ -66,20 +63,7 @@ const Dashboard = (props) => {
 			},
 
 			xaxis: {
-				categories: [
-					"Janeiro",
-					"Fevereiro",
-					"Março",
-					"Abril",
-					"Maio",
-					"Junho",
-					"Julho",
-					"Agosto",
-					"Setembro",
-					"Outubro",
-					"Novembro",
-					"Dezembro",
-				],
+				categories: Array.isArray(dataRanking) ? dataRanking.map((item) => item.classificacao) : [],
 			},
 
 			fill: {
@@ -88,9 +72,13 @@ const Dashboard = (props) => {
 		},
 	};
 
-	const stateQtdeDisponivel = {
-		series: dataProdutos,
-
+	const stateMaterialUsuario = {
+		series: Array.isArray(dataMaterial) ? dataMaterial.map((item) => ({
+			name: item.name,
+			data: item.data,
+			type: 'bar',
+			stack: 'total',
+		})) : [],
 		options: {
 			chart: {
 				stacked: true,
@@ -120,12 +108,13 @@ const Dashboard = (props) => {
 			plotOptions: {
 				bar: {
 					horizontal: false,
+					columnWidth: "50%",
 				},
 			},
 
 			xaxis: {
 				type: "category",
-				categories: dataEstoque.map((item) => item.descricao),
+				categories: Array.isArray(dataUsuario) ? dataUsuario.map((item) => item.nome) : [],
 			},
 
 			legend: {
@@ -163,40 +152,45 @@ const Dashboard = (props) => {
 						</h1>
 					</Col>
 				</Row>
-				<Row gutter={16} style={{ width: "100%", marginBottom: 30 }}>
-					<Card
-						title="Entrada e Saída de Produtos"
-						style={{
-							width: "100%",
-							borderWidth: 4,
-							border: "1px solid #d4d4d4",
-						}}
-					>
-						<Chart
-							options={stateEntradaSaida.options}
-							series={stateEntradaSaida.series}
-							height={300}
-							type="bar"
-						/>
-					</Card>
-				</Row>
-				<Row gutter={16} style={{ width: "100%", marginBottom: 30 }}>
-					<Card
-						title="Produtos Disponíveis por Estoque"
-						style={{
-							width: "100%",
-							borderWidth: 4,
-							border: "1px solid #d4d4d4",
-						}}
-					>
-						<Chart
-							options={stateQtdeDisponivel.options}
-							series={stateQtdeDisponivel.series}
-							height={300}
-							type="bar"
-						/>
-					</Card>
-				</Row>
+				{dataRanking.length > 0 && (
+					<Row gutter={16} style={{ width: "100%", marginBottom: 30 }}>
+						<Card
+							title="Ranking de Materiais"
+							style={{
+								width: "100%",
+								borderWidth: 4,
+								border: "1px solid #d4d4d4",
+							}}
+						>
+							<Chart
+								options={stateRanking.options}
+								series={stateRanking.series}
+								height={300}
+								type="bar"
+							/>
+						</Card>
+					</Row>
+				)}
+
+				{dataMaterial.length > 0 && dataUsuario.length > 0 && (
+					<Row gutter={16} style={{ width: "100%", marginBottom: 30 }}>
+						<Card
+							title="Materias por usuário"
+							style={{
+								width: "100%",
+								borderWidth: 4,
+								border: "1px solid #d4d4d4",
+							}}
+						>
+							<Chart
+								options={stateMaterialUsuario.options}
+								series={stateMaterialUsuario.series}
+								height={300}
+								type="bar"
+							/>
+						</Card>
+					</Row>
+				)}
 			</div>
 		</PageContent>
 	);
