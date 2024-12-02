@@ -89,9 +89,7 @@ const Dashboard = (props) => {
 					enabled: true,
 				},
 			},
-
 			colors: [COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7],
-
 			responsive: [
 				{
 					breakpoint: 480,
@@ -104,24 +102,20 @@ const Dashboard = (props) => {
 					},
 				},
 			],
-
 			plotOptions: {
 				bar: {
 					horizontal: false,
 					columnWidth: "50%",
 				},
 			},
-
 			xaxis: {
 				type: "category",
-				categories: Array.isArray(dataUsuario) ? dataUsuario.map((item) => item.nome) : [],
+				categories: dataUsuario.length > 0 ? dataUsuario.map((item) => item.nome) : [],
 			},
-
 			legend: {
 				position: "right",
 				offsetY: 40,
 			},
-
 			fill: {
 				opacity: 1,
 			},

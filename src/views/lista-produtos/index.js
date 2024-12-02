@@ -74,20 +74,20 @@ const ListaProduto = () => {
 			key: "action",
 			render: (_, record) => (
 				<Space size="middle">
-					{flag_admin === "true" && (
+
 						<>
 							<Tooltip title="Visualizar">
 								<Button type="link" icon={<EyeOutlined />} onClick={() => showModal(record)} />
 							</Tooltip>
 						</>
-					)}
-						{flag_admin === "true" && (
+
+
 							<Tooltip title="Editar">
 								<Link to={`/produto/${record.id}`}>
 									<Button type="link" icon={<EditOutlined />} />
 								</Link>
 							</Tooltip>
-						)}
+
 					{flag_admin === "true" && (
 						<Popconfirm
 							title="Tem certeza que deseja excluir?"
